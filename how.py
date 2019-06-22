@@ -27,7 +27,7 @@ class Password_Page(QWidget):
         QWidget.__init__(self)
         # 사용될 위젯 생성
         self.tbx_pw = QLineEdit(self)
-        self.tbx_pw.setEchoMode(QLineEdit.Password)
+       # self.tbx_pw.setEchoMode(QLineEdit.Password)
         self.pb_0 = QPushButton("0", self)
         self.pb_1 = QPushButton("1", self)
         self.pb_2 = QPushButton("2", self)
@@ -38,6 +38,7 @@ class Password_Page(QWidget):
         self.pb_7 = QPushButton("7", self)
         self.pb_8 = QPushButton("8", self)
         self.pb_9 = QPushButton("9", self)
+        self.pb_clear = QPushButton("clear", self)
         self.pb_ok = QPushButton("해제", self)
 
         # 위젯 배치
@@ -78,23 +79,76 @@ class Password_Page(QWidget):
         self.pb_0.resize(70, 70)
         self.pb_0.move(250, 354)
 
-        self.pb_ok.resize(185, 70)
-        self.pb_ok.move(365, 354)
+        self.pb_clear.resize(70, 70)
+        self.pb_clear.move(365, 354)
+
+        self.pb_ok.resize(70, 70)
+        self.pb_ok.move(480, 354)
 
         # 시그널 슬롯 연결
         self.pb_1.clicked.connect(self.AddOne)
         self.pb_2.clicked.connect(self.AddTwo)
+        self.pb_3.clicked.connect(self.AddThree)
+        self.pb_4.clicked.connect(self.AddFour)
+        self.pb_5.clicked.connect(self.AddFive)
+        self.pb_6.clicked.connect(self.AddSix)
+        self.pb_7.clicked.connect(self.AddSeven)
+        self.pb_8.clicked.connect(self.AddEight)
+        self.pb_9.clicked.connect(self.AddNine)
+        self.pb_0.clicked.connect(self.AddZero)
+        self.pb_clear.clicked.connect(self.Clear)
         #
         # # 기본 값 생성
         # self.set_random_numbers()
 
     @pyqtSlot()
     def AddOne(self):
-        self.tbx_pw.text += "1"
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "1"))
 
     @pyqtSlot()
     def AddTwo(self):
-        self.tbx_pw.setText = "2"
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "2"))
+
+    @pyqtSlot()
+    def AddThree(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "3"))
+
+    @pyqtSlot()
+    def AddFour(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "4"))
+
+    @pyqtSlot()
+    def AddFive(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "5"))
+
+    @pyqtSlot()
+    def AddSix(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "6"))
+
+    @pyqtSlot()
+    def AddSeven(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "7"))
+
+    @pyqtSlot()
+    def AddEight(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "8"))
+
+    @pyqtSlot()
+    def AddNine(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "9"))
+
+    @pyqtSlot()
+    def AddZero(self):
+        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "0"))
+
+    @pyqtSlot()
+    def Clear(self):
+        self.tbx_pw.clear()
+
+    @pyqtSlot()
+    def Unlock(self):
+        self.tbx_pw.clear()
+        #여기에 시리얼 관련코드 필요
     # 계산하여 값을 전송
     # @pyqtSlot()
     # def calculate(self):
