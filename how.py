@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QDial
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot
-from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMessageBox
 
 __author__ = "Deokyu Lim <hong18s@gmail.com>"
 
@@ -110,9 +110,11 @@ class Password_Page(QWidget):
         self.pb_9.clicked.connect(self.AddNine)
         self.pb_0.clicked.connect(self.AddZero)
         self.pb_clear.clicked.connect(self.Clear)
+        self.pb_ok.clicked.connect(self.Unlock)
         #
         # # 기본 값 생성
         # self.set_random_numbers()
+
 
     @pyqtSlot()
     def AddOne(self):
@@ -169,14 +171,20 @@ class Password_Page(QWidget):
                 line = file.readline()
 
                 if not line:
-                    QtGui.QMessage
-                    break
+                    reply = QMessageBox.question(self, "경고", "일치하는 비밀번호가 없습니다.", QMessageBox.Yes | QMessageBox.No,
+                                                 QMessageBox.No)
+
+                    if reply == QMessageBox.Yes:
+                        break
+                    else:
+                        break
                 elif(loginPW==line):
+                    ser = SerialConnect()
+                    ser.SendMessage("10")
                     break
 
 
-        ser = SerialConnect()
-        ser.SendMessage("10")
+
 
         #여기에 시리얼 관련코드 필요
     # 계산하여 값을 전송
