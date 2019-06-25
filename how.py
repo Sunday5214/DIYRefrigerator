@@ -1,4 +1,6 @@
 import sys
+import serial
+import os
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QBoxLayout
 from PyQt5.QtWidgets import QPushButton
@@ -10,13 +12,24 @@ from PyQt5.QtWidgets import QDial
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtGui
 
 __author__ = "Deokyu Lim <hong18s@gmail.com>"
 
 class PW_setting(QWidget):
     def __init__(self):
         QWidget.__init__(self)
+
+class SerialConnect():
+    def SendMessage(self, Message):
+        self.ser = serial.Serial("/dev/ttyS0", 9600)
+        self.ser.write(bytes(Message.encode()))
+        self.ser.close()
+
+    def ReadMessage(self):
+        self.ser = serial.Serial("/dev/ttyS0", 9600)
+        self.ser.read()
+        self.ser.close()
 
 
 class Password_Page(QWidget):
@@ -112,6 +125,7 @@ class Password_Page(QWidget):
     @pyqtSlot()
     def AddThree(self):
         self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "3"))
+       # self.tbx_pw.text += "3"
 
     @pyqtSlot()
     def AddFour(self):
@@ -147,7 +161,23 @@ class Password_Page(QWidget):
 
     @pyqtSlot()
     def Unlock(self):
-        self.tbx_pw.clear()
+        file_on_off=os.path.isdir("login.txt")
+        loginPW = self.tbx_pw.text()
+        if(file_on_off):
+            file = open("login.txt", "r")
+            while True:
+                line = file.readline()
+
+                if not line:
+                    QtGui.QMessage
+                    break
+                elif(loginPW==line):
+                    break
+
+
+        ser = SerialConnect()
+        ser.SendMessage("10")
+
         #여기에 시리얼 관련코드 필요
     # 계산하여 값을 전송
     # @pyqtSlot()
