@@ -10,15 +10,15 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QLCDNumber
 from PyQt5.QtWidgets import QDial
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QCheckBox
+from PyQt5.QtCore import Qt
 
 __author__ = "Deokyu Lim <hong18s@gmail.com>"
 
-class PW_setting(QWidget):
-    def __init__(self):
-        QWidget.__init__(self)
 
 # class SerialConnect():
 #     def SendMessage(self, Message):
@@ -33,14 +33,12 @@ class PW_setting(QWidget):
 
 
 class Password_Page(QWidget):
-    # 계산 버튼이 눌러졌을때 값을 전달할 시그널
-    #result_changed = pyqtSignal(int, name="resultChanged")
 
     def __init__(self):
         QWidget.__init__(self)
         # 사용될 위젯 생성
         self.tbx_pw = QLineEdit(self)
-       # self.tbx_pw.setEchoMode(QLineEdit.Password)
+        self.tbx_pw.setEchoMode(QLineEdit.Password)
         self.pb_0 = QPushButton("0", self)
         self.pb_1 = QPushButton("1", self)
         self.pb_2 = QPushButton("2", self)
@@ -111,9 +109,6 @@ class Password_Page(QWidget):
         self.pb_0.clicked.connect(self.AddZero)
         self.pb_clear.clicked.connect(self.Clear)
         self.pb_ok.clicked.connect(self.Unlock)
-        #
-        # # 기본 값 생성
-        # self.set_random_numbers()
 
 
     @pyqtSlot()
@@ -183,21 +178,11 @@ class Password_Page(QWidget):
                     # ser.SendMessage("10")
                     break
 
+class Setting_Page(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
 
-
-
-        #여기에 시리얼 관련코드 필요
-    # 계산하여 값을 전송
-    # @pyqtSlot()
-    # def calculate(self):
-    #     result = self.input_a + self.input_b
-    #     self.result_changed.emit(result)
-    #
-    # @pyqtSlot()
-    # def set_random_numbers(self):
-    #     self.input_a = random.randrange(1, 100)
-    #     self.input_b = random.randrange(1, 100)
-    #     self.lb.setText("{0} + {1}".format(self.input_a, self.input_b))
+        PW_cb = QCheckBox("비밀번호 비활성화", self)
 
 
 class Temperature_Page(QWidget):
@@ -232,47 +217,39 @@ class Temperature_Page(QWidget):
         self.SettingDial.move(430, 210)
 
         self.SettingDial.valueChanged.connect(self.WantTemperature.display)
-    # 페이지 중앙 라벨에 값을 바꿀 수 있는 슬롯
-    # @pyqtSlot(int, name="setValue")
-    # def set_value(self, v: int):
-    #     self.lb_result.setText(str(v))
 
 
 class Form(QWidget):
     def __init__(self):
         QWidget.__init__(self, flags=Qt.Widget)
         self.tbw = QTabWidget()
-        self.init_widget()
+        self.init_ui()
 
-    def init_widget(self):
-        """
-        현재 위젯의 모양등을 초기화
-        """
-        self.setWindowTitle("Tab Widget")
+    def init_ui(self):
+        #현재 위젯의 모양등을 초기화
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         form_lbx = QBoxLayout(QBoxLayout.TopToBottom, parent=self)
         self.setLayout(form_lbx)
         self.resize(800, 480)
+        self.center()
         form_lbx.addWidget(self.tbw)
 
         # 페이지 생성e
         self.password_page = Password_Page()
-        self.pw_setting = PW_setting()
+        self.setting_page = Setting_Page()
         self.temperature_page = Temperature_Page()
 
 
         # 기본 탭 생성
         self.tbw.addTab(self.password_page, "잠금해제")
-        self.tbw.addTab(self.pw_setting, "잠금설정")
+        self.tbw.addTab(self.setting_page, "잠금설정")
         self.tbw.addTab(self.temperature_page, "온도설정")
 
-
-        # # 시그널 슬롯 연결
-        # # 입력 페이지의 값이 계산되면 즉시 결과 페이지에 반영됨
-        # self.page_input.result_changed.connect(self.page_result.set_value)
-        # # 탭을 결과 페이지로 강제 이동
-        # self.page_input.result_changed.connect(
-        #     lambda __: self.tbw.setCurrentIndex(1))
-
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
