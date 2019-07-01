@@ -20,16 +20,16 @@ class PW_setting(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
-class SerialConnect():
-    def SendMessage(self, Message):
-        self.ser = serial.Serial("/dev/ttyS0", 9600)
-        self.ser.write(bytes(Message.encode()))
-        self.ser.close()
-
-    def ReadMessage(self):
-        self.ser = serial.Serial("/dev/ttyS0", 9600)
-        self.ser.read()
-        self.ser.close()
+# class SerialConnect():
+#     def SendMessage(self, Message):
+#         self.ser = serial.Serial("/dev/ttyS0", 9600)
+#         self.ser.write(bytes(Message.encode()))
+#         self.ser.close()
+#
+#     def ReadMessage(self):
+#         self.ser = serial.Serial("/dev/ttyS0", 9600)
+#         self.ser.read()
+#         self.ser.close()
 
 
 class Password_Page(QWidget):
@@ -179,8 +179,8 @@ class Password_Page(QWidget):
                     else:
                         break
                 elif(loginPW==line):
-                    ser = SerialConnect()
-                    ser.SendMessage("10")
+                    # ser = SerialConnect()
+                    # ser.SendMessage("10")
                     break
 
 
