@@ -1,5 +1,5 @@
 import sys
-import serial
+
 import os
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QBoxLayout
@@ -30,6 +30,47 @@ __author__ = "Deokyu Lim <hong18s@gmail.com>"
 #         self.ser = serial.Serial("/dev/ttyS0", 9600)
 #         self.ser.read()
 #         self.ser.close()
+class Fileio:
+    def Wrtie(self, password):
+        try:
+            self.wfile = open(os.getcwd()+"\password.txt", "a")
+            password += "\n"
+            self.wfile.write(password)
+            self.wfile.close()
+        except Exception as e:
+            print(e)
+
+    def ReWrite(self, data):
+        try:
+            self.refile = open(os.getcwd()+"\password.txt", "r+t")
+            self.refile.write(data)
+        except Exception as e:
+            print(e)
+
+    def Read(self):
+        try:
+            self.rfile = open(os.getcwd()+"\password.txt", "r")
+            self.pwData = self.rfile.read()
+            return self.pwData
+        except Exception as e:
+            print(e)
+
+    def Find(self, wPassword):
+        try:
+            a = Fileio()
+            self.data = a.Read()
+            return  self.data.find(wPassword)
+        except Exception as e:
+            print(e)
+
+    def Update(self, wChangePW, wChangedPW):
+        try:
+            a = Fileio()
+            self.data = a.Read()
+            self.ChangeData = self.data.replace(wChangePW, wChangedPW)
+            a.ReWrite(self.ChangeData)
+        except Exception as e:
+            print(e)
 
 
 class Password_Page(QWidget):
@@ -51,50 +92,56 @@ class Password_Page(QWidget):
         self.pb_9 = QPushButton("9", self)
         self.pb_clear = QPushButton("clear", self)
         self.pb_ok = QPushButton("해제", self)
+        self.changePW = QCheckBox("비밀번호 교체", self)
+
+        self.leftlocation = 250
+        self.middlelocation = 365
+        self.rightlocation = 480
 
         # 위젯 배치
+        self.changePW.move(350, 50)
         self.tbx_pw.resize(300, 30)
-        self.tbx_pw.move(250, 10)
+        self.tbx_pw.move(self.leftlocation, 10)
 
         #첫째줄
         self.pb_1.resize(70, 70)
-        self.pb_1.move(250, 78)
+        self.pb_1.move(self.leftlocation, 78)
 
         self.pb_2.resize(70, 70)
-        self.pb_2.move(365, 78)
+        self.pb_2.move(self.middlelocation, 78)
 
         self.pb_3.resize(70, 70)
-        self.pb_3.move(480, 78)
+        self.pb_3.move(self.rightlocation, 78)
 
         #둘째줄
         self.pb_4.resize(70, 70)
-        self.pb_4.move(250, 170)
+        self.pb_4.move(self.leftlocation, 170)
 
         self.pb_5.resize(70, 70)
-        self.pb_5.move(365, 170)
+        self.pb_5.move(self.middlelocation, 170)
 
         self.pb_6.resize(70, 70)
-        self.pb_6.move(480, 170)
+        self.pb_6.move(self.rightlocation, 170)
 
         #셋째줄
         self.pb_7.resize(70, 70)
-        self.pb_7.move(250, 262)
+        self.pb_7.move(self.leftlocation, 262)
 
         self.pb_8.resize(70, 70)
-        self.pb_8.move(365, 262)
+        self.pb_8.move(self.middlelocation, 262)
 
         self.pb_9.resize(70, 70)
-        self.pb_9.move(480, 262)
+        self.pb_9.move(self.rightlocation, 262)
 
         #넷째줄
         self.pb_0.resize(70, 70)
-        self.pb_0.move(250, 354)
+        self.pb_0.move(self.leftlocation, 354)
 
         self.pb_clear.resize(70, 70)
-        self.pb_clear.move(365, 354)
+        self.pb_clear.move(self.middlelocation, 354)
 
         self.pb_ok.resize(70, 70)
-        self.pb_ok.move(480, 354)
+        self.pb_ok.move(self.rightlocation, 354)
 
         # 시그널 슬롯 연결
         self.pb_1.clicked.connect(self.AddOne)
@@ -109,6 +156,14 @@ class Password_Page(QWidget):
         self.pb_0.clicked.connect(self.AddZero)
         self.pb_clear.clicked.connect(self.Clear)
         self.pb_ok.clicked.connect(self.Unlock)
+        self.changePW.connect(self.PwChangeFunc)
+
+    @pyqtSlot()
+    def PwChangeFunc(self, state):
+        if state == Qt.Checked:
+            self.replay = QMessageBox(self, "알림", "비밀번호를 바꾸시겠습니까?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if self.replay == QMessageBox.Yes:
 
 
     @pyqtSlot()
@@ -158,31 +213,18 @@ class Password_Page(QWidget):
 
     @pyqtSlot()
     def Unlock(self):
-        file_on_off=os.path.isdir("login.txt")
-        loginPW = self.tbx_pw.text()
-        if(file_on_off):
-            file = open("login.txt", "r")
-            while True:
-                line = file.readline()
-
-                if not line:
-                    reply = QMessageBox.question(self, "경고", "일치하는 비밀번호가 없습니다.", QMessageBox.Yes | QMessageBox.No,
-                                                 QMessageBox.No)
-
-                    if reply == QMessageBox.Yes:
-                        break
-                    else:
-                        break
-                elif(loginPW==line):
-                    # ser = SerialConnect()
-                    # ser.SendMessage("10")
-                    break
-
-class Setting_Page(QWidget):
-    def __init__(self):
-        QWidget.__init__(self)
-
-        PW_cb = QCheckBox("비밀번호 비활성화", self)
+        self.loginPW = self.tbx_pw.text()
+        a = Fileio()
+        self.enablePw = a.Find(self.loginPW)
+        if self.enablePw > -1 :
+            self.replay = QMessageBox.question(self, "알림", "냉장고를 여시겠습니까?",
+                                               QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if self.replay == QMessageBox.Yes:
+                QMessageBox.question(self, "열림", "열림",  QMessageBox.Yes, QMessageBox.Yes)
+            else:
+                QMessageBox.question(self, "닫힘", QMessageBox.Yes, QMessageBox.Yes)
+        else:
+            QMessageBox.question(self, "경고", "비밀번호가 일치하지 않습니다", QMessageBox.Yes, QMessageBox.Yes)
 
 
 class Temperature_Page(QWidget):
@@ -213,8 +255,10 @@ class Temperature_Page(QWidget):
         self.WantTemperature.resize(300, 100)
         self.WantTemperature.move(400, 130)
 
-        self.SettingDial.resize(245, 245)
-        self.SettingDial.move(430, 210)
+        self.SettingDial.resize(190, 190)
+        self.SettingDial.setRange(-20, 20)
+        self.SettingDial.setNotchesVisible(True)
+        self.SettingDial.move(460, 250)
 
         self.SettingDial.valueChanged.connect(self.WantTemperature.display)
 
@@ -236,13 +280,11 @@ class Form(QWidget):
 
         # 페이지 생성e
         self.password_page = Password_Page()
-        self.setting_page = Setting_Page()
         self.temperature_page = Temperature_Page()
 
 
         # 기본 탭 생성
         self.tbw.addTab(self.password_page, "잠금해제")
-        self.tbw.addTab(self.setting_page, "잠금설정")
         self.tbw.addTab(self.temperature_page, "온도설정")
 
     def center(self):
