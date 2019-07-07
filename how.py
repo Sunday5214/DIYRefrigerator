@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore
+import re
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtCore import Qt
 
@@ -92,14 +93,14 @@ class Password_Page(QWidget):
         self.pb_9 = QPushButton("9", self)
         self.pb_clear = QPushButton("clear", self)
         self.pb_ok = QPushButton("해제", self)
-        self.changePW = QCheckBox("비밀번호 교체", self)
+        self.changePW = QPushButton("비밀번호 교체", self)
 
         self.leftlocation = 250
         self.middlelocation = 365
         self.rightlocation = 480
 
         # 위젯 배치
-        self.changePW.move(350, 50)
+        self.changePW.move(356, 50)
         self.tbx_pw.resize(300, 30)
         self.tbx_pw.move(self.leftlocation, 10)
 
@@ -156,15 +157,32 @@ class Password_Page(QWidget):
         self.pb_0.clicked.connect(self.AddZero)
         self.pb_clear.clicked.connect(self.Clear)
         self.pb_ok.clicked.connect(self.Unlock)
-        self.changePW.connect(self.PwChangeFunc)
+        self.changePW.clicked.connect(self.PwChangeFunc)
+        self.tbx_pw.textChanged.connect(self.cleaner)
 
     @pyqtSlot()
-    def PwChangeFunc(self, state):
-        if state == Qt.Checked:
-            self.replay = QMessageBox(self, "알림", "비밀번호를 바꾸시겠습니까?",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if self.replay == QMessageBox.Yes:
+    def cleaner(self):
+        self.loginPW = self.tbx_pw.text()
+        self.hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
+        self.integer = re.findall("\d+", self.loginPW)
+        self.result = self.hangul.sub('', self.loginPW)
+        if self.result == "여기에 현재 비번을 입력해주세요" and len(self.integer) > 0:
+            print(self.integer)
+            self.tbx_pw.clear()
+            #self.tbx_pw.setEchoMode(QLineEdit.Password)
+            self.tbx_pw.setText("%d", self.integer)
+        # elif self.integer > 0 and self.result == "여기에 현재 비번을 입력해주세요":
+        #     self.tbx_pw.clear()
 
+    @pyqtSlot()
+    def PwChangeFunc(self):
+
+        self.res = QMessageBox.question(self, "알림", "비밀번호를 바꾸시겠습니까?",
+                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if self.res == QMessageBox.Yes:
+            self.tbx_pw.clear()
+            self.tbx_pw.setEchoMode(QLineEdit.Normal)
+            self.tbx_pw.setText("{}".format("여기에 현재 비번을 입력해주세요"))
 
     @pyqtSlot()
     def AddOne(self):
