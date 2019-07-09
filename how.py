@@ -20,7 +20,10 @@ from PyQt5.QtCore import Qt
 
 __author__ = "Deokyu Lim <hong18s@gmail.com>"
 
-
+numbertemp = 0
+pwtemp = ""
+flag = 0
+flag2 = 0
 # class SerialConnect():
 #     def SendMessage(self, Message):
 #         self.ser = serial.Serial("/dev/ttyS0", 9600)
@@ -60,7 +63,7 @@ class Fileio:
         try:
             a = Fileio()
             self.data = a.Read()
-            return  self.data.find(wPassword)
+            return self.data.find(wPassword)
         except Exception as e:
             print(e)
 
@@ -158,73 +161,182 @@ class Password_Page(QWidget):
         self.pb_clear.clicked.connect(self.Clear)
         self.pb_ok.clicked.connect(self.Unlock)
         self.changePW.clicked.connect(self.PwChangeFunc)
-        self.tbx_pw.textChanged.connect(self.cleaner)
-
-    @pyqtSlot()
-    def cleaner(self):
-        self.loginPW = self.tbx_pw.text()
-        self.hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
-        self.integer = re.findall("\d+", self.loginPW)
-        self.result = self.hangul.sub('', self.loginPW)
-        if self.result == "여기에 현재 비번을 입력해주세요" and len(self.integer) > 0:
-            print(self.integer)
-            self.tbx_pw.clear()
-            #self.tbx_pw.setEchoMode(QLineEdit.Password)
-            self.tbx_pw.setText("%d", self.integer)
-        # elif self.integer > 0 and self.result == "여기에 현재 비번을 입력해주세요":
-        #     self.tbx_pw.clear()
 
     @pyqtSlot()
     def PwChangeFunc(self):
+        global flag
+        global flag2
+        global pwtemp
+        if flag2 == 0:
+            self.res = QMessageBox.question(self, "알림", "비밀번호를 바꾸시겠습니까?",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if self.res == QMessageBox.Yes:
+                pwtemp = self.tbx_pw.text()
+                self.tbx_pw.clear()
+                self.tbx_pw.setEchoMode(QLineEdit.Normal)
+                self.tbx_pw.setText("{}".format("please Wirte now password and push button"))
+                flag = 1
+                flag2 = 1
+        elif flag2 == 1:
+            a = Fileio()
+            self.enable = a.Find(self.tbx_pw.text())
+            if self.enable > -1:
+                a.Update(self.tbx_pw.text(), pwtemp)
+                QMessageBox.question(self, "알림", "비밀번호를 바꾸었습니다.",
+                                    QMessageBox.Yes, QMessageBox.Yes)
+            else:
+                QMessageBox.question(self, "알림", "입력한 비밀번호가 적합하지 않습니다.",
+                                    QMessageBox.Yes, QMessageBox.Yes)
 
-        self.res = QMessageBox.question(self, "알림", "비밀번호를 바꾸시겠습니까?",
-                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if self.res == QMessageBox.Yes:
-            self.tbx_pw.clear()
-            self.tbx_pw.setEchoMode(QLineEdit.Normal)
-            self.tbx_pw.setText("{}".format("여기에 현재 비번을 입력해주세요"))
+
+
 
     @pyqtSlot()
     def AddOne(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "1"))
+        global numbertemp
+        global flag
+        numbertemp = 1
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW=="please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "1"))
 
     @pyqtSlot()
     def AddTwo(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "2"))
-
+        global numbertemp
+        global flag
+        numbertemp = 2
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW=="please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "2"))
     @pyqtSlot()
     def AddThree(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "3"))
+        global numbertemp
+        global flag
+        numbertemp = 3
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "3"))
        # self.tbx_pw.text += "3"
 
     @pyqtSlot()
     def AddFour(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "4"))
+        global numbertemp
+        global flag
+        numbertemp = 4
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "4"))
 
     @pyqtSlot()
     def AddFive(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "5"))
+        global numbertemp
+        global flag
+        numbertemp = 5
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "5"))
 
     @pyqtSlot()
     def AddSix(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "6"))
+        global numbertemp
+        global flag
+        numbertemp = 6
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "6"))
 
     @pyqtSlot()
     def AddSeven(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "7"))
-
+        global numbertemp
+        global flag
+        numbertemp = 7
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "7"))
     @pyqtSlot()
     def AddEight(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "8"))
-
+        global numbertemp
+        global flag
+        numbertemp = 8
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "8"))
     @pyqtSlot()
     def AddNine(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "9"))
-
+        global numbertemp
+        global flag
+        numbertemp = 9
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "9"))
     @pyqtSlot()
     def AddZero(self):
-        self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "0"))
-
+        global numbertemp
+        global flag
+        numbertemp = 0
+        self.loginPW = self.tbx_pw.text()
+        if self.loginPW == "please Wirte now password and push button":
+            if flag == 1:
+                self.tbx_pw.setEchoMode(QLineEdit.Password)
+                flag = 0
+            self.tbx_pw.clear()
+            self.tbx_pw.setText("{}".format(str(numbertemp)))
+        else:
+            self.tbx_pw.setText("{}".format(self.tbx_pw.text() + "0"))
     @pyqtSlot()
     def Clear(self):
         self.tbx_pw.clear()
