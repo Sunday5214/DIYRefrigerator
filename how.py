@@ -1,6 +1,8 @@
 import sys
-
+import RPi.GPIO as gpio
+import Adafruit_DHT
 import os
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QBoxLayout
 from PyQt5.QtWidgets import QPushButton
@@ -14,16 +16,61 @@ from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore
-import re
-from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtCore import Qt
 
 __author__ = "Deokyu Lim <hong18s@gmail.com>"
 
 numbertemp = 0
+sensor = Adafruit_DHT.DHT11
 pwtemp = ""
 flag = 0
 flag2 = 0
+sensorValue = 0
+gpio.setmode(gpio.BCM)
+RelayIN1 = 3
+RelayIN2 = 2
+Magantic = 4
+DHT11 = 17
+
+class gpioControl(QThread):
+    global sensorValue
+    def __init__(self):
+        QThread.__init__(self)
+        self.cond = QWaitCondition()
+        self.mutex = QMutex()
+        self.cnt = 0
+        self._status = True
+    def __del__(self):
+        self.wait()
+    def run(self):
+        while True:
+            self.mutex.lock()
+            if not self._status:
+                self.cond.wait(self.mutex)
+
+            if self.cnt != sensorValue:
+                sensorValue = self.cnt
+                gpio.output(RelayIN1, False)
+                gpio.output(RelayIN2, False)
+            elif self.cnt == sensorValue:
+                gpio.output(RelayIN1, True)
+                gpio.output(RelayIN2, True)
+
+            self.humidity, self.temperature = Adafruit_DHT.read_retry(sensor, DHT11)
+            self.humidity = int(self.humidity)
+            self.temperature = int(self.temperature)
+            self.cnt = str(self.temperature)
+
+            self.mutex.unlock()
+    def toggle_status(self):
+        self._status = not self._status
+        if self._status:
+            self.cond.wakeAll()
+
+    @property
+    def status(self):
+        return self._status
+
 # class SerialConnect():
 #     def SendMessage(self, Message):
 #         self.ser = serial.Serial("/dev/ttyS0", 9600)
@@ -350,6 +397,7 @@ class Password_Page(QWidget):
             self.replay = QMessageBox.question(self, "알림", "냉장고를 여시겠습니까?",
                                                QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if self.replay == QMessageBox.Yes:
+                gpio.output(Magantic, True)
                 QMessageBox.question(self, "열림", "열림",  QMessageBox.Yes, QMessageBox.Yes)
             else:
                 QMessageBox.question(self, "닫힘", QMessageBox.Yes, QMessageBox.Yes)
