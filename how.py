@@ -437,7 +437,7 @@ class Temperature_Page(QWidget):
         self.SettingDial.setRange(-20, 20)
         self.SettingDial.setNotchesVisible(True)
         self.SettingDial.move(460, 250)
-
+        self.NowTemperature.display()
         self.SettingDial.valueChanged.connect(self.WantTemperature.display)
 
 
